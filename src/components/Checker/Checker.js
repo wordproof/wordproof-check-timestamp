@@ -75,11 +75,13 @@ class Checker extends Component {
           }
 
           {(this.state.valid === true) ?
-            <Notification isColor="success">GOOD</Notification> : ''
+            <Notification isColor="success">The hash you put in and the generated hash are
+              identical.</Notification> : ''
           }
 
           {(this.state.valid === false) ?
-            <Notification isColor="warning">NOT GOOD</Notification> : ''
+            <Notification isColor="warning">The hash you put in and the generated hash are not the same. The content you
+              are reading may be outdated or tampered with.</Notification> : ''
           }
         </div>
       </div>
