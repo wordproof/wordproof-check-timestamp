@@ -1,6 +1,7 @@
 {
   "name": "wordproof-check-timestamp",
-  "version": "0.1.0",
+  "version": "1.0",
+  "homepage" : "https://wordproof.io/check-timestamp",
   "private": true,
   "dependencies": {
     "bloomer": "^0.6.5",
