@@ -24,6 +24,7 @@ function App() {
           </div>
           <Checker/>
         </Content>
+        <p className="is-size-7">By using WORD, you pledge to have read and accept the <a target="_blank" rel="noopener noreferrer" href="https://wordproof.io/wp-content/uploads/2019/06/product-terms.pdf">WordProof Product Agreement and Terms and Conditions</a>.</p>
       </Container>
     </div>
   );
