@@ -7,7 +7,7 @@ class Checker extends Component {
     super(props);
     this.state = {
       isDisabled: null,
-      inputContent: null,
+      inputContent: '',
       inputHash: null,
       generatedHash: null,
       valid: null
@@ -18,8 +18,8 @@ class Checker extends Component {
     this.setState({
       inputContent: e.target.value
     })
-    console.log(e.target.value);
   }
+
   setHash = (e) => {
     this.setState({
       inputHash: e.target.value
@@ -58,14 +58,14 @@ class Checker extends Component {
         <Field>
           <Label>Raw Content</Label>
           <Control>
-            <TextArea onChange={this.setContent} rows={10} placeholder={'{"title":"", "content":"", "date":""}'}/>
+            <TextArea onChange={this.setContent} rows={10} placeholder={'{"type":"WebArticleTimestamp","version":0.1,"title":"","content":"Lorem Ipsum","date":"2019-07-11T19:33:49+00:00"}'}/>
             <Help>A JSON-object containing the title, content and date</Help>
           </Control>
         </Field>
         <Button isColor="primary" disabled={this.state.isDisabled} onClick={this.hashContent}>Generate Hash</Button>
 
         <div className="result">
-          {(this.state.valid === true) || (this.state.valid === true) ?
+          {(this.state.valid === true) || (this.state.valid === false) ?
             <Field>
               <Label>Generated Hash</Label>
               <Control>
