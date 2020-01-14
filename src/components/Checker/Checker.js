@@ -8,9 +8,20 @@ class Checker extends Component {
     this.state = {
       isDisabled: null,
       inputContent: '',
-      inputHash: null,
+      inputHash: '',
       generatedHash: null,
       valid: null
+    }
+  }
+
+  componentDidMount() {
+    this.checkForHash();
+  }
+
+  checkForHash = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get('hash')) {
+      this.setState({inputHash: searchParams.get('hash')});
     }
   }
 
@@ -27,17 +38,15 @@ class Checker extends Component {
   }
 
   hashContent = () => {
-    let content = this.state.inputContent;
+    let content = this.state.inputContent.trim();
     let hash = sha256(content);
     if (hash === this.state.inputHash) {
       this.setState({
-        isDisabled: true,
         valid: true,
         generatedHash: hash
       })
     } else {
       this.setState({
-        isDisabled: true,
         valid: false,
         generatedHash: hash
       })
@@ -50,7 +59,7 @@ class Checker extends Component {
         <Field>
           <Label>Blockchain Hash</Label>
           <Control>
-            <Input onChange={this.setHash} type="text"
+            <Input onChange={this.setHash} type="text" value={this.state.inputHash}
                    placeholder='e.g. a93963adb1734e799f47ab87a9b4de784dd3c276f07bfcc9234acb1d82080100'/>
             <Help>The hash retrieved from the blockchain</Help>
           </Control>
@@ -62,7 +71,7 @@ class Checker extends Component {
             <Help>A JSON-object containing the title, content and date</Help>
           </Control>
         </Field>
-        <Button isColor="primary" disabled={this.state.isDisabled} onClick={this.hashContent}>Generate Hash</Button>
+        <Button isColor="primary" onClick={this.hashContent}>Generate Hash</Button>
 
         <div className="result">
           {(this.state.valid === true) || (this.state.valid === false) ?
