@@ -25,20 +25,26 @@ class Checker extends Component {
     }
   }
 
-  setContent = (e) => {
+  setHash = (e) => {
+    let content = e.target.value;
+    content = content.replace(' ', '');
+    content = content.trim();
     this.setState({
-      inputContent: e.target.value
+      inputHash: content
     })
   }
 
-  setHash = (e) => {
+  setContent = (e) => {
+    let content = e.target.value;
+    content = content.replace(/[\r\n]+/gm, '');
+    content = content.trim();
     this.setState({
-      inputHash: e.target.value
+      inputContent: content
     })
   }
 
   hashContent = () => {
-    let content = this.state.inputContent.trim();
+    let content = this.state.inputContent;
     let hash = sha256(content);
     if (hash === this.state.inputHash) {
       this.setState({
@@ -67,7 +73,7 @@ class Checker extends Component {
         <Field>
           <Label>Raw Content</Label>
           <Control>
-            <TextArea onChange={this.setContent} rows={10} placeholder={'{"type":"WebArticleTimestamp","version":0.1,"title":"","content":"Lorem Ipsum","date":"2019-07-11T19:33:49+00:00"}'}/>
+            <TextArea onChange={this.setContent} value={this.state.inputContent} rows={10} placeholder={'{"type":"WebArticleTimestamp","version":0.1,"title":"","content":"Lorem Ipsum","date":"2019-07-11T19:33:49+00:00"}'}/>
             <Help>A JSON-object containing the title, content and date</Help>
           </Control>
         </Field>
