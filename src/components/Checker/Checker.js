@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {sha256} from 'js-sha256';
-import {Field, Label, Control, TextArea, Button, Input, Help, Notification} from 'bloomer';
+import {Field, Label, Control, TextArea, Button, Input, Help, Notification, Columns, Column} from 'bloomer';
 
 class Checker extends Component {
     constructor(props) {
@@ -63,18 +63,16 @@ class Checker extends Component {
 
         fr.readAsArrayBuffer(file);
 
+        let content = this.state.inputContent;
+        content = content.replace(/"contentHash":"[a-zA-Z0-9]+"/g, '"contentHash":"' + this.state.fileHash + '"');
         this.setState({
-            fileName: file.name
+            fileName: file.name,
+            inputContent: content
         });
     }
 
     hashContent = () => {
         let content = this.state.inputContent;
-
-        if (this.state.fileUpload && this.state.fileHash) {
-          content = content.replace(/"contentHash":"[a-zA-Z0-9]+"/g, '"contentHash":"' + this.state.fileHash +'"');
-          this.setState({inputContent: content});
-        }
 
         let hash = sha256(content);
         if (hash === this.state.inputHash) {
@@ -105,68 +103,83 @@ class Checker extends Component {
     render() {
         return (
             <div className="checker">
-                <Field>
-                    <Label>Blockchain Hash</Label>
-                    <Control>
-                        <Input onChange={this.setHash} type="text" value={this.state.inputHash}
-                               placeholder='e.g. a93963adb1734e799f47ab87a9b4de784dd3c276f07bfcc9234acb1d82080100'/>
-                        <Help>The hash retrieved from the blockchain</Help>
-                    </Control>
-                </Field>
+                <Columns>
+                    <Column isSize='1/2'>
 
-                <Field>
-                    <Label>Raw Content</Label>
-                    <Control>
-                        <TextArea onChange={this.setContent} value={this.state.inputContent} rows={10}
-                                  placeholder={'{"type":"WebArticleTimestamp","version":0.1,"title":"","content":"Lorem Ipsum","date":"2019-07-11T19:33:49+00:00"}'}/>
-                        <Help>A JSON-object containing the title, content and date</Help>
-                    </Control>
-                </Field>
+                        <Field>
+                            <Label>Raw Content</Label>
+                            <Control>
+                                <TextArea onChange={this.setContent} value={this.state.inputContent} rows={10}
+                                          placeholder={'{"type":"WebArticleTimestamp","version":0.1,"title":"","content":"Lorem Ipsum","date":"2019-07-11T19:33:49+00:00"}'}/>
+                                <Help>A JSON-object containing the title, content and date</Help>
+                            </Control>
+                        </Field>
 
-                {(this.state.fileUpload === true) ?
-                    <div className={'fileupload'}>
-                        <Label>File</Label>
-                        <div className="file has-name is-fullwidth is-block">
-                            <label className="file-label">
-                                <input className="file-input" type="file" name="file" onChange={this.setFileHash}/>
-                                <span className="file-cta">
+                        <Button isColor="primary" onClick={this.hashContent}>Compare Hashes</Button>
+
+                    </Column>
+                    <Column isSize='1/2'>
+
+                        <Field>
+                            <Label>Blockchain Hash</Label>
+                            <Control>
+                                <Input onChange={this.setHash} type="text" value={this.state.inputHash}
+                                       placeholder='e.g. a93963adb1734e799f47ab87a9b4de784dd3c276f07bfcc9234acb1d82080100'/>
+                                <Help>The hash retrieved from the blockchain</Help>
+                            </Control>
+                        </Field>
+
+                        {(this.state.fileUpload === true) ?
+                            <div className={'fileupload'}>
+                                <Label>File</Label>
+                                <div className="file has-name is-fullwidth is-block">
+                                    <label className="file-label">
+                                        <input className="file-input" type="file" name="file"
+                                               onChange={this.setFileHash}/>
+                                        <span className="file-cta">
                                   <span className="file-label">
                                     Choose a file…
                                   </span>
                                 </span>
-                                <span className="file-name">{this.state.fileName}</span>
-                            </label>
-                            <Help className={'mb-4'}>You are checking an MediaObjectTimestamp, containing the hash of
-                                the original file. To check if this hash is correct, select the original file that was
-                                timestamped. We do not save or upload this file, everything is done locally on your
-                                computer.</Help>
+                                        <span className="file-name">{this.state.fileName}</span>
+                                    </label>
+                                    <Help className={'mb-4'}>You are checking an MediaObjectTimestamp, containing the
+                                        hash of
+                                        the original file. To check if this hash is correct, select the original file
+                                        that was
+                                        timestamped. We do not save or upload this file, everything is done locally on
+                                        your
+                                        computer.</Help>
+                                </div>
+                            </div> : ''
+                        }
+
+                        <div className="result">
+                            {(this.state.valid === true) || (this.state.valid === false) ?
+                                <Field>
+                                    <Label>Generated Hash</Label>
+                                    <Control>
+                                        <Input isColor={(this.state.valid === true) ? 'success' : 'warning'} readOnly value={this.state.generatedHash}/>
+                                    </Control>
+                                </Field> : ''
+                            }
                         </div>
-                    </div> : ''
+
+                    </Column>
+                </Columns>
+
+                {(this.state.valid === true) ?
+                    <Notification isColor="success">The hash you put in and the generated hash are
+                        identical.</Notification> : ''
                 }
 
-                <Button isColor="primary" onClick={this.hashContent}>Generate Hash</Button>
+                {(this.state.valid === false) ?
+                    <Notification isColor="warning">The hash you put in and the generated hash are not the
+                        same. The
+                        content you
+                        are reading may be outdated or tampered with.</Notification> : ''
+                }
 
-                <div className="result">
-                    {(this.state.valid === true) || (this.state.valid === false) ?
-                        <Field>
-                            <Label>Generated Hash</Label>
-                            <Control>
-                                <Input readOnly value={this.state.generatedHash}/>
-                            </Control>
-                        </Field> : ''
-                    }
-
-                    {(this.state.valid === true) ?
-                        <Notification isColor="success">The hash you put in and the generated hash are
-                            identical.</Notification> : ''
-                    }
-
-                    {(this.state.valid === false) ?
-                        <Notification isColor="warning">The hash you put in and the generated hash are not the same. The
-                            content you
-                            are reading may be outdated or tampered with.</Notification> : ''
-                    }
-                </div>
             </div>
         );
     }
